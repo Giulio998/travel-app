@@ -1,7 +1,8 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import Homepage from '../views/Homepage.vue'
 import TripDetail from '../views/TripDetail.vue'
-import TripCreate from '../views/TripCreate.vue'
+import AppTrips from '../views/AppTrips.vue'
+import AppHome from '@/views/AppHome.vue'
+
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -9,7 +10,7 @@ const router = createRouter({
     {
       path: '/',
       name: 'home',
-      component: Homepage
+      component: AppHome
     },
     {
       path: '/trip/:index',
@@ -17,9 +18,9 @@ const router = createRouter({
       component: TripDetail
     },
     {
-      path: '/create/',
-      name: 'trip.create',
-      component: TripCreate
+      path: '/my_trips',
+      name: 'trip.myTrips',
+      component: AppTrips
     }
   ]
 })

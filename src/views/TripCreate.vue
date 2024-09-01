@@ -1,47 +1,20 @@
 <template>
-  <div class="container-md">
-    <div>
-      <div class="pt-2">
-        <h1 class="display-4">Crea il tuo Viaggio</h1>
-      </div>
-      <div class="mb-2">
-        <label for="name">Nome del viaggio <span class="text-danger">*</span></label>
-        <input type="text" placeholder="Nome" id="name" name="name" v-model="this.newTrip.name" required class="w100" />
-      </div>
-      <div class="mb-2">
-        <label for="start_date">Data di inizio <span class="text-danger">*</span></label>
-        <input type="date" id="start_date" name="start_date" v-model="newTrip.start_date" required class="w100"
-          @input="valiDate()" />
-        <div v-if="newTrip.start_date !== '' && newTrip.start_date < formattedDate" class="text-danger">La data inserita
-          non è valida</div>
-      </div>
-      <div class="mb-2">
-        <label for="end_date">Data di fine <span class="text-danger">*</span></label>
-        <input type="date" id="end_date" name="end_date" v-model="newTrip.end_date" required @input="valiDate()"
-          class="w100" />
-        <div v-if="newTrip.end_date !== '' && newTrip.end_date < newTrip.start_date" class="text-danger">La data
-          inserita
-          non è valida</div>
-      </div>
-      <div class="mb-4">
-        <label for="thumbnail">Immagine di copertina</label>
-        <input type="file" id="thumbnail" name="thumbnail" accept="image/png, image/jpeg" @change="uploadImage()"
-          class="w100 file" />
-        <img :src="newTrip.image" width="300px" />
-      </div>
-      <button :disabled="unchecked() ? true : false" :class="unchecked() ? 'disabled-btn' : 'btn-bd-primary'"
-        class="btn " value="Invia" @click="addTrip()">Invia</button>
-    </div>
+  <div>
+    <h1>Nuova vacanza</h1>
   </div>
+  <div>
+    <input type="text" placeholder="Nome" id="name" name="name" v-model="this.newTrip.name" required />
+  </div>
+  <input type="date" id="start_date" name="start_date" v-model="newTrip.start_date" required @input="valiDate()" />
+  <input type="date" id="end_date" name="end_date" v-model="newTrip.end_date" required @input="valiDate()" />
+  <input type="file" id="thumbnail" name="thumbnail" accept="image/png, image/jpeg" @change="uploadImage()" />
+  <img :src="newTrip.image" width="300px" />
 
-
-
-
+  <RouterLink :to="{ name: 'home' }"><button class="btn btn-warning" value="Invia" @click="addTrip()">Invia</button>
+  </RouterLink>
 </template>
 
 <script>
-
-import router from '../router/index'
 export default {
   data() {
     return {
@@ -53,38 +26,19 @@ export default {
         days: null,
         activities: []
       },
-
-      validated: false,
+      validated: null,
       myTrips: []
     }
   },
 
   methods: {
-
-    unchecked() {
-
-      if (this.validated === false || this.newTrip.name == '') {
-        return true
-      } else {
-        return false
-      }
-    },
     valiDate() {
-
-
-      if (new Date(this.newTrip.start_date) <= new Date(this.newTrip.end_date)) {
-        if (this.newTrip.start_date >= this.formattedDate) {
-          this.validated = true
-          this.calculateDays()
-        } else {
-          this.validated = false
-        }
-
+      if (new Date(this.newTrip.start_date) < new Date(this.newTrip.end_date)) {
+        this.validated = true
+        this.calculateDays()
       } else {
         this.validated = false
-
       }
-
     },
     generateDays() {
       for (let i = 0; i < this.newTrip.days; i++) {
@@ -100,7 +54,6 @@ export default {
       this.generateDays()
       this.myTrips.push(this.newTrip)
       localStorage.setItem('trips', JSON.stringify(this.myTrips))
-      router.push({ path: '/' })
     },
     fetchTrips() {
       let trips = localStorage.getItem('trips')
@@ -113,7 +66,7 @@ export default {
       const start = new Date(this.newTrip.start_date)
       const end = new Date(this.newTrip.end_date)
       const timeDifference = end.getTime() - start.getTime()
-      this.newTrip.days = Math.floor(timeDifference / (1000 * 3600 * 24)) + 1
+      this.newTrip.days = Math.floor(timeDifference / (1000 * 3600 * 24))
     },
     uploadImage() {
       const file = document.querySelector('input[type=file]').files[0]
@@ -126,60 +79,13 @@ export default {
       }
 
       reader.readAsDataURL(file)
-    },
-    getCurrentDateTime() {
-      const currentDate = new Date();
-      const formattedDate = new Date().toJSON().slice(0, 10)
-      this.formattedDate = formattedDate;
-
-
-    },
+    }
   },
 
-
   mounted() {
-    this.fetchTrips(), this.getCurrentDateTime();
+    this.fetchTrips()
   }
 }
 </script>
 
-<style lang="scss" scoped>
-@use '../style/partials/variables' as *;
-
-label {
-  display: block;
-  margin-bottom: 5px;
-}
-
-.container-md {
-  display: flex;
-  justify-content: center;
-
-}
-
-
-.btn-bd-primary {
-  --bs-btn-font-weight: 600;
-  --bs-btn-color: #F7F7F8;
-  --bs-btn-bg: #3795BD;
-  --bs-btn-border-color: #3795BD;
-  --bs-btn-hover-color: #49a5cc;
-  --bs-btn-hover-bg: #{shade-color#3795BD, 10%};
-  --bs-btn-hover-border-color: #{shade-color#3795BD, 10%};
-  --bs-btn-focus-shadow-rgb: var;
-  --bs-btn-active-color: var;
-  --bs-btn-active-bg: #{shade-color#3795BD, 20%};
-  --bs-btn-active-border-color: #{shade-color#3795BD, 20%};
-}
-
-.w100 {
-  width: 100%;
-}
-
-input:not(.file){
-  height: 35px;
-    border-radius: 5px;
-    border: 1px solid #222;
-    padding: 10px;
-}
-</style>
+<style lang="scss" scoped></style>

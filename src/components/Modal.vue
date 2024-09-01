@@ -7,7 +7,7 @@
         <div class="row justify-space-around">
           <div class="col-6">
             <div class="mb-2">
-              <label class="form-label">Nome</label>
+              <label class="form-label">Nome attività</label>
               <input type="text" class="form-control" placeholder="Nome" v-model="activity.name" />
             </div>
 
@@ -20,14 +20,15 @@
               <label class="form-label">Note</label>
               <textarea class="form-control" v-model="activity.note"></textarea>
             </div>
-
-            <button :disabled="emptyFields() ? true : false" @click="pushActivity(n)">
-              Aggiungi
-            </button>
           </div>
           <div class="col-6">
             <label class="form-label">Luogo</label>
             <div :id="'searchbox-' + n"></div>
+          </div>
+          <div class="btnContainer">
+            <button class="btn btn-primary" :disabled="emptyFields() ? true : false" @click="pushActivity(n)">
+              Aggiungi
+            </button>
           </div>
         </div>
       </div>
@@ -91,11 +92,18 @@ export default {
     handleResultSelection(event) {
       var result = event.data.result
       console.log(result)
-      if (result.type == 'Geography') {
-        this.activity.locationName = result.address.municipality
+      if (result.entityType == 'Neighbourhood') {
+        this.activity.locationName = result.address.neighbourhood
       } else if (result.type == 'POI') {
         this.activity.locationName = result.poi.name
+      } else if (result.type == 'Street') {
+        this.activity.locationName = result.address.streetName
+      } else if (result.type == 'Point Address') {
+        this.activity.locationName = result.address.streetName + '' + result.address.streetNumber
+      } else if (result.type == 'Geography') {
+        this.activity.locationName = result.address.municipality
       }
+
       let lat = result.position.lat
       let lon = result.position.lng
 
@@ -176,13 +184,14 @@ export default {
     position: absolute;
     right: 30px;
     top: 20px;
+    cursor: pointer;
 
     &:hover {
       transform: scale(1.1);
     }
   }
 
-  [id^='searchbox-'] > * {
+  [id^='searchbox-']>* {
     margin-top: 0 !important;
   }
 }
@@ -191,11 +200,15 @@ export default {
   background: rgba(0, 0, 0, 0.24);
   z-index: 5;
   width: 100vw;
-  height: 100vh;
+  height: calc(100vh - 80px);
   overflow: hidden;
   position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
+  top: 0;
+  left: -50px;
+}
+
+.btnContainer {
+  display: flex;
+  justify-content: end;
 }
 </style>

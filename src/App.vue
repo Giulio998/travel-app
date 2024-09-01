@@ -1,19 +1,19 @@
 <script>
-import { RouterLink, RouterView } from 'vue-router'
-import Header from './components/Header.vue'
+import AppHeader from './components/AppHeader.vue'
 export default {
   data() {
     return {}
   },
 
   components: {
-    Header
+    AppHeader,
   }
 }
 </script>
 
 <template>
-  <Header> </Header>
+  <AppHeader/>
+
 
   <RouterView />
 </template>

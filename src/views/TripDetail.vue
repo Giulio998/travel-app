@@ -1,26 +1,29 @@
 <template>
-  <div class="container">
-    <div class="row p-2">
-      <div class="col-5 d-flex flex-column">
-        <div class="tripCard d-flex mb-3">
-          <div class="cardBody">
-        
-            <h1>{{ myTrip.name }}</h1>
-            <h5>Data di inizio : {{ myTrip.start_date }}</h5>
-            <h5>Data di fine : {{ myTrip.end_date }}</h5>
+  <div class="generalContainer">
+    <div class="overflow"></div>
+    <img class="w-100 h-100" :src="sanFrancisco" alt="image" />
+    <div class="custom-container ms-5">
+      <div class="row p-2 mt-4">
+        <div class="col-6 d-flex flex-column p-3 infoContainer">
+          <div class="tripCard d-flex mb-3">
+            <div class="cardBody">
+              <h1 class="text-white">{{ myTrip.name }}</h1>
+              <h5 class="text-white">Data Partenza: {{ myTrip.start_date }}</h5>
+              <h5 class="text-white"><strong>Data Ritorno:</strong> {{ myTrip.end_date }}</h5>
+              <h5 v-if="clickedActivityName !== ''" class="text-white">Nome Attività: {{ clickedActivityName }}</h5>
+              <h5 v-if="clickedActivityAddress !== ''" class="text-white">Luogo Attività: {{ clickedActivityAddress }}
+              </h5>
+            </div>
           </div>
-          <div v-if="myTrip.image" class="cardHead p-1">
-            <img :src="myTrip.image" alt="Immagine vacanza" width="300px" max-heigth="150px" />
+          <div id="mapContainer">
+            <Map :key="myTrip" :locations="locations" :activities="myTrip.activities" :selectedMarker="selectedMarker"
+              :selectedDay="selectedDay"></Map>
           </div>
         </div>
-        <div id="mapContainer">
-          <Map   :key="myTrip" :locations="locations" :activities="myTrip.activities " :selectedMarker="selectedMarker"
-          :selectedDay="selectedDay"></Map>
+        <div class="col-6 d-flex flex-column plannerContainer">
+          <Planner :days="myTrip.days" :myTrip="myTrip" @fetchTrips="this.fetchTrips()"
+            @locationZoom="handleLocationZoom" @selectDay="handleSelectDay"></Planner>
         </div>
-      </div>
-      <div class="col-7 d-flex flex-column">
-        <Planner :days="myTrip.days" :myTrip="myTrip" @fetchTrips="this.fetchTrips()" @locationZoom="handleLocationZoom"
-        @selectDay="handleSelectDay"></Planner>
       </div>
     </div>
   </div>
@@ -30,9 +33,7 @@
 import { store } from '../store'
 import Planner from '../components/Planner.vue'
 import Map from '../components/Map.vue'
-
-import tt from '@tomtom-international/web-sdk-maps'
-import axios from 'axios'
+import sanFrancisco from '@/assets/sanFrancisco.jpg'
 
 export default {
   data() {
@@ -41,7 +42,10 @@ export default {
       myTrip: [],
       locations: [],
       selectedMarker: [],
-      selectedDay: null
+      selectedDay: null,
+      sanFrancisco,
+      clickedActivityName: '',
+      clickedActivityAddress: '',
     }
   },
 
@@ -53,24 +57,15 @@ export default {
       console.log(n)
 
       if (this.selectedDay == n - 1) {
-         
         this.selectedDay = null
       } else {
         this.selectedDay = n - 1
       }
-      // const index = this.selectedDays.indexOf(n)
-      // if (index === -1) {
-      //   this.selectedDays.push(n)
-      // } else {
-      //   this.selectedDays.splice(index, 1)
-      // }
     },
     handleLocationZoom(n, index) {
       this.getCurrentMarker(n, index)
     },
     getCurrentMarker(n, index) {
-      
-      
       this.selectedMarker = this.myTrip.activities[n - 1][index].locationCoordinates
     },
     fetchTrips() {
@@ -82,23 +77,20 @@ export default {
         let tripId = currentUrl.substring(currentUrl.lastIndexOf('/') + 1)
         console.log(tripId)
         this.myTrip = myTrips[tripId]
-        
-        
-     /*    this.retrieveMarkers(this.myTrip.activities) */
       }
     },
     retrieveMarkers(activities) {
-
       activities.forEach((subArray) => {
         subArray.forEach((item) => {
-          
           if (item.locationCoordinates) {
-            
-            
             this.locations.push(item.locationCoordinates)
           }
         })
       })
+    },
+    convertData(formatoISO) {
+      let [anno, mese, giorno] = formatoISO.split('-')
+      return `${giorno}/${mese}/${anno}`
     }
   },
   components: { Planner, Map },
@@ -109,15 +101,60 @@ export default {
 }
 </script>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+.generalContainer {
+  width: 100vw;
+  height: calc(100vh - 80px);
+  object-fit: cover;
+  position: absolute;
+  z-index: 997;
 
-<!-- 
-function addMarker(map) { 
-  const tt = window.tt; 
-  var location = [-121.91595, 37.36729]; 
-  var popupOffset = 25; 
+  .img {
+    object-fit: cover;
+  }
+}
 
-  var marker = new tt.Marker().setLngLat(location).addTo(map); 
-  var popup = new tt.Popup({ offset: popupOffset }).setHTML("Your address!"); 
-          marker.setPopup(popup).togglePopup(); 
-}  -->
+.infoContainer {
+  border-radius: 15px;
+  background-color: #ffffff44;
+  backdrop-filter: blur(8px);
+  position: absolute;
+  left: 0;
+  width: 47%;
+  height: fit-content;
+}
+
+.plannerContainer {
+  height: fit-content;
+}
+
+.custom-container {
+  position: absolute;
+  top: 0;
+  z-index: 999;
+  width: 90%;
+}
+
+.overflow {
+  width: 100vw;
+  height: calc(100vh - 80px);
+  background-color: rgba(0, 0, 0, 0.163);
+  position: absolute;
+  top: 0;
+  z-index: 998;
+}
+
+.row {
+  overflow-y: auto;
+  height: calc(100vh - 132px);
+  display: flex;
+  justify-content: end;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+</style>

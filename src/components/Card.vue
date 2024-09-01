@@ -1,42 +1,66 @@
 <script>
+import texture1 from '@/assets/texture1.jpg'
+import texture3 from '@/assets/texture3.jpg'
+import texture4 from '@/assets/texture4.jpg'
+import texture5 from '@/assets/texture5.jpg'
+import texture6 from '@/assets/texture6.jpg'
+import texture7 from '@/assets/texture7.jpg'
+import texture8 from '@/assets/texture8.jpg'
+import texture9 from '@/assets/texture9.jpg'
+import texture10 from '@/assets/texture10.jpg'
+import texture11 from '@/assets/texture11.jpg'
+
+import router from '../router/index'
+
 export default {
   data() {
-    return {}
+    const imgArray = [
+      texture1,
+      texture3,
+      texture4,
+      texture5,
+      texture6,
+      texture7,
+      texture8,
+      texture9,
+      texture10,
+      texture11
+    ]
+    return {
+      imgArray
+    }
   },
   emits: ['deleteTrip'],
   props: { trip: Object, index: Number },
-  methods: {}
+  methods: {
+    redirectToDetail(index) {
+      router.push(`/trip/${index}`)
+    },
+    convertData(formatoISO) {
+      let [anno, mese, giorno] = formatoISO.split('-')
+      return `${giorno}/${mese}/${anno}`
+    }
+  }
 }
 </script>
 
 <template>
-  <div class="myCard p-2">
+  <div class="myCard">
     <router-link :to="{ name: 'trip.show', params: { index: index } }" class="router-link">
       <div class="coverImage">
-        <img :src="trip.image" />
-        <img
-          v-if="trip.image"
-          :src="trip.image"
-          alt="Immagine vacanza"
-          width="300px"
-          max-heigth="150px"
-        />
-        <img
-          v-else
-          src="https://img.freepik.com/premium-vector/default-image-icon-vector-missing-picture-page-website-design-mobile-app-no-photo-available_87543-11093.jpg?w=900"
-          alt="Immagine vacanza"
-          width="300px"
-          max-heigth="150px"
-        />
+        <img :src="imgArray[Math.floor(Math.random() * 10)]" alt="" />
       </div>
       <div class="tripDetails">
-        <h3 class="detailCap">{{ trip.name }}</h3>
-        <p class="detailCap">{{ trip.start_date }} -> {{ trip.end_date }}</p>
+        <h2 class="detailCap">{{ trip.name }}</h2>
+        <small class="detailCap">Data Partenza: {{ convertData(trip.start_date) }}</small>
+        <small class="detailCap">Data Ritorno: {{ convertData(trip.end_date) }}</small>
       </div>
     </router-link>
-    <div>
-      <button type="button" class="btn btn-danger ms-1" @click="this.$emit('deleteTrip', index)">
-        <i class="bi bi-trash-fill"></i>
+    <div class="btnContainer">
+
+
+      <button type="button" class="btn border-danger deleteBtn" @click="this.$emit('deleteTrip', index)">
+        <p>Elimina</p>
       </button>
     </div>
   </div>
@@ -47,19 +71,19 @@ export default {
 @use '../style/partials/variables' as *;
 
 .myCard {
-  max-width: 300px;
+  width: 275px;
   position: relative;
-  background-color: white;
   height: 100%;
   z-index: 2;
-  color: $secondary;
-  border-radius: 5px;
-  border: 1px solid $secondary;
+  color: white !important;
+  border-radius: 10px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  // overflow: hidden;
-  // white-space: nowrap;
+  background-color: #ffffff44;
+  backdrop-filter: blur(8px);
+  box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+  cursor: pointer;
 
   .restaurantDetails {
     padding: 0px 15px;
@@ -68,31 +92,56 @@ export default {
     text-overflow: ellipsis;
     flex-grow: 1;
   }
-  &:hover {
-    box-shadow: 0 0 7px black;
-    transform: scale(1.02);
-    transition: all 0.1s ease-in-out 0.1s;
-  }
 
   .coverImage {
     width: 100%;
-    overflow: hidden;
-    // border-radius: 10px;
+    height: 40px;
+    background-color: lightblue;
     margin-bottom: 15px;
-    aspect-ratio: 16 / 9;
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
     display: flex;
     justify-content: center;
     align-items: center;
+    object-fit: cover;
 
     img {
       width: 100%;
+      height: 100%;
+      border-top-left-radius: 10px;
+      border-top-right-radius: 10px;
+      object-fit: cover;
+      opacity: 80%;
+    }
+  }
+
+  .deleteBtn {
+    height: 38px;
+    color: white;
+    background-color: rgba(255, 0, 0, 0.387);
+
+    &:hover {
+      background-color: rgba(255, 0, 0, 0.65);
+    }
+  }
+
+  .modifyBtn {
+    height: 38px;
+    color: white;
+    background-color: rgba(0, 166, 255, 0.387);
+    margin-right: 10px;
+
+    &:hover {
+      background-color: #3795bdc4;
     }
   }
 }
 
 h3.detailCap {
   font-size: 25px;
+  color: white;
 }
+
 .detailCap {
   text-transform: capitalize;
   white-space: nowrap;
@@ -100,6 +149,7 @@ h3.detailCap {
   text-overflow: ellipsis;
   display: block;
   width: 100%;
+  color: white;
 }
 
 .router-link {
@@ -108,9 +158,7 @@ h3.detailCap {
 
 .rightColumn {
   padding: 0;
-  // height: calc(100vh - $headerHeight - $footerHeight);
   overflow: auto;
-  // background-color: $primary;
   display: flex;
   justify-content: start;
   flex-wrap: wrap;
@@ -124,5 +172,15 @@ h3.detailCap {
   text-overflow: ellipsis;
   display: block;
   width: 100%;
+}
+
+.tripDetails {
+  padding: 5px 10px;
+}
+
+.btnContainer {
+  padding: 10px;
+  display: flex;
+  justify-content: end;
 }
 </style>

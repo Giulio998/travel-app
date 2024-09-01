@@ -12,11 +12,10 @@ export default {
 
 <template>
   <nav class="navbar navbar-expand-lg sticky-sm-top">
-    <div class="container-sm flex-nowrap">
+    <div class="container-fluid flex-nowrap navContainer">
       <router-link :to="{ name: 'home' }" class="nav-link navbar-brand" aria-current="page">
         <div class="d-flex align-items-center">
-          <img src="../assets/icon.svg" alt="logo" class="logo" />
-          <h3 class="text-white ">TravelApp</h3>
+          <img src="../assets/logo.png" alt="logo" class="logo" />
         </div></router-link
       >
 
@@ -30,13 +29,22 @@ export default {
             >Home</router-link
           >
         </li>
-        <li class="nav-item">
+       <!--  <li class="nav-item">
           <router-link
             :to="{ name: 'trip.create' }"
             class="nav-link"
             aria-current="page"
             exact-active-class="active"
             >Aggiungi viaggio</router-link
+          >
+        </li> -->
+        <li class="nav-item">
+          <router-link
+            :to="{ name: 'trip.myTrips' }"
+            class="nav-link"
+            aria-current="page"
+            exact-active-class="active"
+            >I tuoi viaggi</router-link
           >
         </li>
       </ul>
@@ -49,24 +57,26 @@ export default {
 @use '../style/partials/variables' as *;
 
 .navbar {
-  height: $headerHeight;
-  background-color: #3795BD;
+  padding: 0 70px !important;
+  background-color: white;
   box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
-
-
   .nav-link {
     padding: 0 5px;
   }
+
+  .navContainer{
+    background-color: transparent;
+    height: $headerHeight;
+  }
 }
 .logo {
-  height: 50px;
-  margin-right: 10px;
-  filter: brightness(100);
+  height: 40px;
+  margin-right: 20px;
 }
 
 .active {
-  color: $tertiary !important;
-  box-shadow: inset 0 -7px 0 $tertiary;
+  color: #42A5FF !important;
+  box-shadow: inset 0 -7px 0 #42A5FF;
 }
 
 ul {
@@ -75,6 +85,18 @@ ul {
     font-size: 1.2rem;
     margin-right: 30px;
     line-height: $headerHeight;
+    font-size: 16px;
+    color: #42A5FF !important;
   }
 }
+
+a{
+  color: black;
+
+  &:hover{
+    color: #42A5FF;
+  }
+}
+
+
 </style>
