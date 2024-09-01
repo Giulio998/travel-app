@@ -15,7 +15,9 @@
       </div>
     </template>
     <template v-else>
+      <h1 class="customH1">Nessun viaggio pianificato</h1>
       <div class="textContainer">
+
         <h1>Organizza il tuo prossimo viaggio insieme a noi</h1>
       </div>
     </template>
@@ -180,5 +182,15 @@ export default {
   h1 {
     font-size: 60px;
   }
+
+
+}
+
+.customH1 {
+  color: #ffffff;
+  z-index: 9999;
+  position: absolute;
+  left: 21%;
+  font-size: 65px;
 }
 </style>
